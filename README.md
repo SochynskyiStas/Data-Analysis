@@ -1,5 +1,4 @@
-# hello-world
+# R language
 Not first but tutorial repository
 
-Hi hi
-Remebering how git works so just do not pay attention to that go ahead.
+R language and Python 3 experience
