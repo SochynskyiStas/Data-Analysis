@@ -1,0 +1,126 @@
+---
+title: "HW_1"
+author: "Stanislav Sochynskyi"
+date: "March 2, 2019"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+File import
+```{r}
+df<-read.csv("inputfile1.csv",sep=" ")
+df
+```
+
+Task #1. Identify the data type of each column. Write the command and its corresponding output.
+```{r}
+print(class(df$time))
+print(class(df$account_a))
+print(class(df$account_b))
+print(class(df$account_c))
+```
+Task #2. For each columnin dataset:
+a) Find unique values in case column is oftype factor;
+```{r}
+unique(df$time)
+```
+b) Find ranges(minimum and maximum)if column belongs to numeric type:
+For column "account_a".
+```{r}
+min(df$account_a) 
+max(df$account_a) 
+range(df$account_a) 
+```
+For column "account_b".
+```{r}
+min(df$account_b) 
+max(df$account_b) 
+range(df$account_b) 
+```
+For column "account_c".
+```{r}
+min(df$account_c) 
+max(df$account_c) 
+range(df$account_c) 
+```
+
+Task #3. Build 3 scatter plots in order to find correlation among threebank accounts. Is there any relation between any 2 bank accounts?
+
+We need to load "ggplot2" library for this task.
+```{r}
+library("ggplot2")
+```
+
+```{r}
+ggplot(df)+
+  geom_point(aes(x=df$account_a,y=df$account_b))
+cor(df$account_a, df$account_b)
+```
+Negative correlation between "account_a"" and "account_b"" is observed in the grap. Function "cor" showed "-0.9671627" which proves our observation from the scatter plot.
+
+```{r}
+ggplot(df)+
+  geom_point(aes(x=df$account_a,y=df$account_c))
+cor(df$account_a, df$account_c)
+```
+There's no correlation between "account_a"" and "account_c". Function "cor" showed very low negative number = -0.02937619. 
+
+```{r}
+ggplot(df)+
+  geom_point(aes(x=df$account_c,y=df$account_b))
+cor(df$account_c, df$account_b)
+```
+There's no correlation between "account_a"" and "account_c". Function "cor" showed very low positive number = 0.005483397. 
+
+Task #4. 
+Before selecting records
+Select records for 2016 year only. Before selecting records for 2016 only, we need to . We can either use library "lubridate" or function as.Date. Let's stop with a secind option. To verify that let's use the function "class" to verify that column "time" is not
+```{r}
+df_copy<-df
+df_copy$time<-as.Date(df$time, format="%Y-%m-%d")
+class(df_copy$time)
+```
+Now, let's select the 2016 records and sort them in descending order by time. For that we will need function filter from library "dplyr.
+```{r}
+library(dplyr)
+library(reshape2)
+#*  select(): choosing a subset of columns
+#*  filter(): choosing a subset of rows
+accounts_2016<- df_copy %>%
+  filter(time >= "2016-01-01" & time <="2016-12-01") %>%
+  arrange(desc(time))%>%
+  melt(id="time") #transform to long format based in time
+```
+Build a single plot which will show how balance changed for all 3 accounts during that year. Use line plot for this task. (Each account should have different color).
+```{r}
+ggplot(accounts_2016, aes(x=time, y=value))+
+            geom_line(aes(color=variable))
+```
+
+Task #5. Group data by the year, for each year and account calculate average balance. 
+To do it we need to use function format() extract year from the time column.
+```{r}
+#class(accounts$time)
+df_copy$time<-format(df_copy$time,"%Y")
+grouped_data = group_by(df_copy, time)
+summary<-summarise(grouped_data, mean(account_a), mean(account_b), mean(account_c))
+summary
+```
+
+```{r}
+summary<-melt(summary,id="time")
+```
+
+Build a heat map to see how average balance changed on each account during the years. What can you say based on the plotted heat map? 
+```{r}
+ggplot(summary, aes(x=time, y=variable))+
+  geom_tile(aes(fill=value))
+```
+
+Write at least 3 observations from the heatmap.
+1. The average balance of account c hasn't changed significantly for the past 10 years.
+2. The average balance of account b increased over the 10 years.
+3. The average balance of account a decreased for the past 10 years.
+4. Heatmap also shows a negative correlation between account a and account b.
+
