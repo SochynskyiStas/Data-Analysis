@@ -1,0 +1,381 @@
+---
+title: "Homework 5 by Katsiaryna Lashkevich and Stanislav Sochynskyi"
+output: html_document
+---
+
+>> Task 1
+
+Use AB_clicks.csv data and find whether “Learn”, “Help”, “Services” versions of the page compared to the Interact have significantly more (or less) clicks. Justify the choice of the performed tests and conclude the result.
+
+```{r}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(nortest) 
+library(pwr) 
+```
+
+
+```{r}
+dt <- fread(file.choose()) # AB_clicks.csv
+View(dt)
+```
+
+#T-testing
+#Interact-Learn 
+
+Lets try to perform t-test (A is default and B the Learn version).
+
+HO - there is no difference between Interact-version and Learn-version.
+H1 - there is difference between Interact-version and Learn-version.
+Let's take alpha=0.05
+
+```{r}
+dt_cleaned <- filter(dt, Tag_name!='area')
+dt_interact_learn <- filter(dt_cleaned, Version %in% c("Interact", "Learn"))
+t.test(No_clicks ~ Version, data=dt_interact_learn)
+```
+In order to decide whether to reject the HO or not, we should look at p-value and compare it with the alpha.
+
+0.5888 > 0.05
+P-value > Alpha => Accept HO => There is no difference between Interact-version and Learn-version.
+
+
+Let's find out if we performed the test correctly. The data should be normally distributed in order to provide true results. Let's check whether the data has a normal distribution.
+
+```{r}
+ggplot(dt_cleaned, aes(x=No_clicks, fill=Version)) + 
+  geom_density(alpha=0.3) + 
+  theme_bw()
+```
+
+```{r}
+ggplot(dt_cleaned, aes(x=No_clicks, fill=Version)) + 
+  geom_density(alpha=0.3) + 
+  theme_bw() + 
+  scale_x_log10()
+```
+
+As we can see from the plot, the data does not normally distributed.
+
+We can also test the data on the normal distribution using Anderson-Darling and Shapiro-Wilk normality tests. In our case we used Anderson-Darling normality test.
+
+```{r}
+ad.test(filter(dt_cleaned, Version=='Interact')$No_clicks)
+ad.test(filter(dt_cleaned, Version=='Learn')$No_clicks)
+```
+
+P-values we recieved in these tests are very small and are much less than the alpha. We can conclude that the data in not normally distributed.
+
+As fas as the data is not gaussian, we can use transform No_clicks to log10 and run a Wilcoxon test to inspect the p-value:
+```{r}
+dt_interact_learn <- dt_interact_learn %>%
+  mutate(log_clicks = log10(No_clicks))
+
+wilcox.test(No_clicks ~ Version, data=dt_interact_learn)
+```
+
+The results of the Wilcoxon test on the logged dataset show that the p-value is still higher than alpha => accept H0 => there is no difference between Interact-version and Learn-version.
+
+
+Let’s try to change the hypothesis. Let’s check only those clicks on the objects, when the Visibility=TRUE. 
+```{r}
+dt_interact_learn_visible <- dt_interact_learn %>%
+  filter(Visible==TRUE)
+wilcox.test(log_clicks ~ Version, data=dt_interact_learn_visible)
+```
+
+After excluding invisible elements from the research, the p-value increased. In this case our H0 is also accepte => there is no difference between Interact-version and Learn-version.
+
+
+
+#Interact-Help
+
+Lets perform t-test.
+
+HO - there is no difference between Interact-version and Help-version.
+H1 - there is difference between Interact-version and Help-version.
+Let's take alpha=0.05
+
+```{r}
+dt_interact_help <- filter(dt_cleaned, Version %in% c("Interact", "Help"))
+t.test(No_clicks ~ Version, data=dt_interact_help)
+```
+0.7148 > 0.05
+P-value > Alpha => Accept HO => There is no difference between Interact-version and Help-version.
+
+We already know that the data is not normally distributed. Let's double-check it with Anderson-Darling normality test.
+
+```{r}
+ad.test(filter(dt_cleaned, Version=='Help')$No_clicks)
+```
+
+P-values we recieved is very small and is much less than the alpha. We can conclude we were right - the data in not normally distributed.
+
+As fas as the data is not gaussian, we can use transform No_clicks to log10 and run a Wilcoxon test to inspect the p-value:
+```{r}
+dt_interact_help <- dt_interact_help %>%
+  mutate(log_clicks = log10(No_clicks))
+
+wilcox.test(No_clicks ~ Version, data=dt_interact_help)
+```
+
+The results of the Wilcoxon test on the logged dataset show that the p-value is still higher than alpha => accept H0 => there is no difference between Interact-version and Help-version.
+
+
+
+
+#Interact-Services
+
+Let’s perform t-test.
+
+HO - there is no difference between Interact-version and Services-version.
+H1 - there is difference between Interact-version and Services-version.
+Let's take alpha=0.05
+
+```{r}
+dt_interact_services <- filter(dt_cleaned, Version %in% c("Interact", "Services"))
+t.test(No_clicks ~ Version, data=dt_interact_services)
+```
+0.5469 > 0.05
+P-value > Alpha => Accept HO => There is no difference between Interact-version and Services-version.
+
+We already know that the data is not normally distributed. Let's double-check it with Anderson-Darling normality test.
+
+```{r}
+ad.test(filter(dt_cleaned, Version=='Services')$No_clicks)
+```
+
+P-value we recieved is very small and is much less than the alpha. We can conclude we were right - the data in not normally distributed.
+
+As fas as the data is not gaussian, we can use transform No_clicks to log10 and run a Wilcoxon test to inspect the p-value:
+```{r}
+dt_interact_services <- dt_interact_services %>%
+  mutate(log_clicks = log10(No_clicks))
+
+wilcox.test(No_clicks ~ Version, data=dt_interact_services)
+```
+
+The results of the Wilcoxon test on the logged dataset show that the p-value is still higher than alpha => accept H0 => there is no difference between Interact-version and Services-version.
+
+
+
+
+#Proportion testing 
+
+Now let's check whether the number of times clicked on the particular component out of all clicks to this page is signifcantly better (worse) than the same proportion of clicks in the default version (Interact)? Here we test proportions used in the practice session.
+
+```{r}
+total_clicks <- group_by(dt, Version) %>%
+  summarise(total = sum(No_clicks))   # total number of clicks
+dt_button <- filter(dt, Name %in% c("SERVICES", "HELP", "LEARN","CONNECT", "INTERACT")) %>% 
+  left_join(total_clicks, by = "Version")  %>%
+  mutate(proportions = No_clicks/total)
+dt_button
+```
+
+From this table we can see how many people visited each version of the page and how many of them actually clicked the examined button. The relation between these two parameters is depicted as a proportion.
+
+#Interact-Learn
+
+H0: the proportions are equal in Interaction and Learn groups.
+H1: the proportions are not equal in Interaction and Learn groups.
+
+```{r}
+prop.test(x=dt_button$No_clicks[c(1,3)], n=dt_button$total[c(1,3)])
+```
+0.7617 > 0.05
+P-value > alpha => Accept H0 => the proportions are equal in Interaction and Learn groups.
+
+But let's also calculate the power of the test.
+```{r}
+power.prop.test(n=dt_button$total[c(1,3)], p1=0.01130856, p2=0.01271186)
+```
+
+Based on the power test, we can say that the p-value can not idicate the correct outcome. There is high probability of type 1 and type 2 errors. So, there could be the difference if we change the name of the button from Interact to Learn.
+
+
+#Interact-Help
+
+H0: the proportions are equal in Interaction and Help groups.
+H1: the proportions are not equal in Interaction and Help groups.
+
+```{r}
+prop.test(x=dt_button$No_clicks[c(1,4)], n=dt_button$total[c(1,4)])
+```
+0.03103 < 0.05
+P-value < alpha => Reject H0 => the proportions are not equal in Interaction and Help groups.
+
+But let's also calculate the power of the test.
+```{r}
+power.prop.test(n=dt_button$total[c(1,4)], p1=0.01130856, p2=0.02213162)
+```
+
+Based on the power test, we can say that the p-value can idicate the correct outcome. There is comparitavely lower probability of type 1 and type 2 errors. 
+So, there could be the difference if we change the name of the button from Interact to Help.
+
+
+#Interact-Services
+
+H0: the proportions are equal in Interaction and Services groups.
+H1: the proportions are not equal in Interaction and Services groups.
+
+```{r}
+prop.test(x=dt_button$No_clicks[c(1,5)], n=dt_button$total[c(1,5)])
+```
+1.798e-07 < 0.05
+P-value < alpha => Reject H0 => the proportions are not equal in Interaction and Services groups.
+
+But let's also calculate the power of the test.
+```{r}
+power.prop.test(n=dt_button$total[c(1,5)], p1=0.01130856, p2=0.03338279)
+```
+
+Based on the power test, we can say that the p-value can idicate the correct outcome. There is very low probability of type 1 and type 2 errors. 
+So, there could be the difference if we change the name of the button from Interact to Help.
+
+
+#Conclusion
+We conducted t-test in order to conduct the hypothesis testing whether there any difference between Interact-version and Learn, Help, Services-vesions of the page. Then we tested our datasets for normality with the help of the data visualization. In order to make sure that the data is indeed not gaussian, we performed Anderson-Darling normality test. Having identified that the data is not normally distributed we transformed No_clicks to log10 and ran a Wilcoxon test to inspect the p-value and compare it with the alpha.
+As a result of the t-test, in all examined cases we received p-values higher than alpha. Hence, we accept all H0 => there is no difference between Interact-version and Learn-version, Interact-version and Services-version, Interact-version and Services-version. 
+
+We also conducted a proportion testing to find out how many people actually clicked the button out of all those who visited each version of the page. We consider this test to provide a better understanding of the button name effiiency as far as it provides a more complex and profound approach. The results are as follows: we could reject H0 that the proportions are equal, meaning that there is a difference between the initial name of the button and a new name: people clicked more on the button when it was called "Learn", "Help", "Services" compared to "Interaction".
+
+
+
+
+>> Task 2
+
+1. Read about Multiple comparison problem. What is the problem and when we need to do something about it (describe briefly)?
+
+Generally, the multiple comparison problem is the problem of incorrect rejection (Type I error). It occurs when we have a lot of data thus we have a lot of hypotheses to test and it becomes multilevel testing (big number of comparison). It might lead that hypothesis can be deemed "significant" by chance. Thus p-values must be adjusted to control Type I error rate.
+
+For example, let's assume that we have to conduct testing of 50 hypotheses at the significance level of aplha = 5. The probability of observing at least 1 significant result is equal 92.3%  (1-(1-0.05)^50) [(1-0.05)^50 - the probability of no significant results] even if all of the tests are actually not significant.
+
+2. Let's assume that you performed 1000 different tests related to landing page comparisons of different versions and collected p-values in a vector to see where number of clicks are statistically significant:
+
+```{r}
+set.seed(3583)
+p_values <- abs(rnorm(1000, 0, sd=0.2))
+p_values <- ifelse(p_values>1, 0, p_values)
+```
+
+3. How many tests are statistically significant (under aplha=0.05)?
+```{r}
+count <- 0
+for (i in p_values) {
+if(i < 0.05)
+  count = count+1
+}
+print(count)
+
+#sort(p_values)
+```
+
+4. Use p.adjust function to perform corrections for multiple comparisons. Choose 2 different methods. Compare number of significant tests after the corrections. What has changed?
+
+```{r}
+#Hommel (1988) ("hommel")
+adjst_hommel<-p.adjust(p_values, method = "hommel")
+
+count <- 0
+for (j in adjst_hommel) {
+if(j < 0.05)  
+  count = count+1
+}
+print(count)
+```
+
+```{r}
+#Benjamini & Hochberg (1995)
+adjst_FDR<-p.adjust(p_values, method="fdr")
+
+count <- 0
+for (k in adjst_FDR) {
+if(k < 0.05)  
+  count = count+1
+}
+print(count)
+```
+
+After applying to "p_values" array "p.adjust" functions with methods FDR and Hommel the number of statistically significant tests decreased from 203 to 0.
+
+
+
+
+>> Task 3
+
+1. Check whether the difference in conversion rate is significant. Calculate the number of instances to collect to achieve the power of the test (power=0.8). What can you claim based on those results?
+
+#Small group
+
+First, let's created the data table with the results of the versions testing.
+```{r}
+dt_test1 <- data.table("Version" = c("A", "B"), "converted" = c(54, 67), "not_converted" = c(466, 453))
+
+dt_test1 <- group_by(dt_test1, Version) %>%
+  mutate(total = sum(converted, not_converted)) %>%
+  mutate(proportions = converted/total)
+                      
+dt_test1
+```
+
+In order to do a hypothesis testing we perform a proportions testing.
+
+HO - there is no difference between versions A and B.
+H1 - there is difference between versions A and B.
+```{r}
+prop.test(x=dt_test1$converted, n=dt_test1$total)
+```
+0.2458 > 0.05
+P-value > alpha => Accept H0 => the proportions are equal in versions A and B.
+
+But let's also calculate the power of the test.
+```{r}
+power.prop.test(n=dt_test1$total, p1=0.1038462, p2=0.1288462)
+```
+
+Based on the power test, we can say that the p-value can not idicate the correct outcome. There is high probability of type 1 and type 2 errors. So, there could be the difference versions A and B that influence the convertion rate. 
+
+```{r}
+pwr.t.test(d = 0.2, power=0.8) 
+```
+
+In order to have a possibility of getting power=0.8 we need to have at least 394 observations in each group. As far as we have 520 observations in each group, we have enough observations.
+
+Conclusion
+The results of the proportion testing showed that there is no difference between versions A and B. But the power test indicated that the sample power is very low and the results of the hypothesis testing could produce erros. Hence, we need to improve the sample power, for instance, by enlaging the number of observations.
+
+
+
+#Large group
+
+Again we first create the data table with the results of the versions testing.
+```{r}
+dt_test2 <- data.table("Version" = c("A", "B"), "converted" = c(542, 674), "not_converted" = c(4658, 4526))
+
+dt_test2 <- group_by(dt_test2, Version) %>%
+  mutate(total = sum(converted, not_converted)) %>%
+  mutate(proportions = converted/total)
+                      
+dt_test2
+```
+
+In order to do a hypothesis testing we perform a proportions testing.
+
+HO - there is no difference between versions A and B.
+H1 - there is difference between versions A and B.
+```{r}
+prop.test(x=dt_test2$converted, n=dt_test2$total)
+```
+6.397e-05 < 0.05
+P-value < alpha => Reject H0 => the proportions are NOT equal in versions A and B.
+
+But let's also calculate the power of the test.
+```{r}
+power.prop.test(n=dt_test2$total, p1=0.1042308, p2=0.1296154)
+```
+
+Based on the power test, we can say that the p-value can idicate the correct outcome. There is very low probability of type 1 and type 2 errors. So, there could be the difference versions A and B that influence the convertion rate. 
+
+The lesson could be as follows: the larger the sample size the more accurate results we can get, meaning that the power of the sample improves and there is low probability of errors in hypothesis testing results.

@@ -1,0 +1,360 @@
+"user","book","rating"
+"Marvin Minsky","Artificial intelligence",5
+"Marvin Minsky","Systems programming",2.54
+"Marvin Minsky","Computation",4.32
+"Marvin Minsky","Algorithms",2.76
+"Donald Knuth","Systems programming",3.57
+"Donald Knuth","Computation",4.39
+"Donald Knuth","Algorithms",5
+"Donald Knuth","Programming language theory",4.33
+"Edgar Codd","Concurrency",4.28
+"Edgar Codd","Systems programming",4.6
+"Edgar Codd","Software engineering",3.54
+"Edgar Codd","Formal methods",1.53
+"Edgar Codd","Databases",5
+"Michael Stonebraker","Concurrency",4.14
+"Michael Stonebraker","Systems programming",4.67
+"Michael Stonebraker","Software engineering",3.86
+"Michael Stonebraker","Databases",5
+"Tony Hoare","Concurrency",4.88
+"Tony Hoare","Software engineering",3.62
+"Tony Hoare","Systems programming",4.38
+"Tony Hoare","Algorithms",4.38
+"Tony Hoare","Formal methods",4.72
+"Tony Hoare","Programming language theory",4.64
+"John Backus","Databases",2.8
+"John Backus","Systems programming",4.43
+"John Backus","Software engineering",4.38
+"John Backus","Formal methods",2.42
+"John Backus","Programming language theory",4.58
+"John McCarthy","Artificial intelligence",5
+"John McCarthy","Concurrency",3.61
+"John McCarthy","Computation",3.23
+"John McCarthy","Systems programming",3.25
+"John McCarthy","Algorithms",3.03
+"John McCarthy","Formal methods",3.58
+"John McCarthy","Programming language theory",4.72
+"Dennis Ritchie","Systems programming",5
+"Dennis Ritchie","Software engineering",4.83
+"Dennis Ritchie","Programming language theory",3.45
+"Alan Perlis","Artificial intelligence",1.46
+"Alan Perlis","Databases",2.32
+"Alan Perlis","Systems programming",5
+"Alan Perlis","Software engineering",3.34
+"Leslie Lamport","Concurrency",5
+"Leslie Lamport","Software engineering",3.76
+"Leslie Lamport","Systems programming",2.76
+"Leslie Lamport","Algorithms",4.63
+"Leslie Lamport","Formal methods",4.93
+"Leslie Lamport","Programming language theory",1.5
+"Edsger Dijkstra","Concurrency",3.97
+"Edsger Dijkstra","Software engineering",4.04
+"Edsger Dijkstra","Systems programming",4.52
+"Edsger Dijkstra","Algorithms",4.92
+"Edsger Dijkstra","Formal methods",5
+"Edsger Dijkstra","Programming language theory",4.34
+"Robert Floyd","Concurrency",2.92
+"Robert Floyd","Computation",3.18
+"Robert Floyd","Systems programming",2.17
+"Robert Floyd","Algorithms",5
+"Robert Floyd","Formal methods",5
+"Robert Floyd","Programming language theory",4.24
+"Niklaus Wirth","Algorithms",3.95
+"Niklaus Wirth","Systems programming",4.22
+"Niklaus Wirth","Software engineering",4.74
+"Niklaus Wirth","Formal methods",3.83
+"Niklaus Wirth","Programming language theory",4.23
+"Robin Milner","Concurrency",4.62
+"Robin Milner","Systems programming",1.66
+"Robin Milner","Formal methods",3.94
+"Robin Milner","Programming language theory",5
+"Macauley Mustafa","Databases",4.85
+"Macauley Mustafa","Software engineering",2.17
+"Macauley Mustafa","Systems programming",4.75
+"Macauley Mustafa","Formal methods",4.29
+"Sultan Armstrong","Artificial intelligence",2.3
+"Sultan Armstrong","Computation",3.46
+"Sultan Armstrong","Systems programming",4.62
+"Leandro Warner","Artificial intelligence",3.2
+"Leandro Warner","Software engineering",2.49
+"Leandro Warner","Programming language theory",3.83
+"Leandro Warner","Computation",3.14
+"Leandro Warner","Algorithms",4.49
+"Leandro Warner","Formal methods",1.02
+"Leandro Warner","Databases",4.6
+"Leandro Warner","Systems programming",4.29
+"Javier Donovan","Databases",1.22
+"Javier Donovan","Systems programming",1.69
+"Javier Donovan","Computation",4.33
+"Zakariyya Pemberton","Artificial intelligence",1.57
+"Zakariyya Pemberton","Formal methods",3.09
+"Zakariyya Pemberton","Software engineering",2.91
+"Zakariyya Pemberton","Concurrency",4.25
+"Zakariyya Pemberton","Computation",1.74
+"Francesco Hutton","Artificial intelligence",1.09
+"Francesco Hutton","Formal methods",4.41
+"Francesco Hutton","Systems programming",2.46
+"Francesco Hutton","Programming language theory",4.98
+"Francesco Hutton","Computation",3.04
+"Francesco Hutton","Software engineering",3.62
+"Francesco Hutton","Databases",3.16
+"Francesco Hutton","Algorithms",4.65
+"Jax Sawyer","Formal methods",1.08
+"Jax Sawyer","Programming language theory",3.95
+"Jax Sawyer","Databases",2.48
+"Lacey-Mai Neal","Algorithms",2.79
+"Lacey-Mai Neal","Concurrency",1.09
+"Lacey-Mai Neal","Artificial intelligence",3.53
+"Benny Li","Programming language theory",3.02
+"Benny Li","Computation",4.7
+"Benny Li","Formal methods",4.72
+"Benny Li","Concurrency",3.75
+"Idris William","Formal methods",1.48
+"Idris William","Algorithms",3.45
+"Idris William","Databases",3.48
+"Idris William","Computation",4.06
+"Idris William","Concurrency",2.78
+"Idris William","Artificial intelligence",2.4
+"Thierry Truong","Computation",4.42
+"Thierry Truong","Programming language theory",2.53
+"Thierry Truong","Concurrency",4.31
+"Clive Strong","Computation",2.36
+"Clive Strong","Software engineering",2.43
+"Clive Strong","Systems programming",3.68
+"Mohammod Mccabe","Computation",4.99
+"Mohammod Mccabe","Databases",3.44
+"Mohammod Mccabe","Artificial intelligence",3.19
+"Mohammod Mccabe","Algorithms",3.76
+"Jasleen Flynn","Artificial intelligence",1.33
+"Jasleen Flynn","Concurrency",4.04
+"Jasleen Flynn","Formal methods",1.79
+"Jasleen Flynn","Systems programming",4.16
+"Farrah Traynor","Software engineering",1.35
+"Farrah Traynor","Concurrency",2.04
+"Farrah Traynor","Computation",1.56
+"Milla Callahan","Artificial intelligence",2.88
+"Milla Callahan","Programming language theory",3.82
+"Milla Callahan","Systems programming",2.77
+"Milla Callahan","Formal methods",2.16
+"Milla Callahan","Software engineering",2.05
+"Milla Callahan","Computation",1.3
+"Milla Callahan","Algorithms",2.83
+"Milla Callahan","Databases",2.66
+"Milla Callahan","Concurrency",1.54
+"Hester Dunn","Systems programming",4.51
+"Hester Dunn","Artificial intelligence",1.99
+"Hester Dunn","Databases",4.77
+"Samad Wilkinson","Formal methods",4.51
+"Samad Wilkinson","Software engineering",2.39
+"Samad Wilkinson","Computation",1.86
+"Samad Wilkinson","Concurrency",2.44
+"Samad Wilkinson","Programming language theory",1.04
+"Nikolas Legge","Concurrency",4.77
+"Nikolas Legge","Formal methods",4.67
+"Nikolas Legge","Programming language theory",4.34
+"Nikolas Legge","Systems programming",2.86
+"Nikolas Legge","Software engineering",2.32
+"Huma Delaney","Algorithms",4.44
+"Huma Delaney","Systems programming",2.51
+"Huma Delaney","Databases",4.47
+"Ursula Nichols","Algorithms",2.18
+"Ursula Nichols","Concurrency",4.92
+"Roshan Charles","Databases",4.54
+"Roshan Charles","Software engineering",1.21
+"Roshan Charles","Artificial intelligence",2.73
+"Saima Kearns","Programming language theory",2.49
+"Saima Kearns","Systems programming",1.7
+"Saima Kearns","Software engineering",1.71
+"Saima Kearns","Formal methods",3.59
+"Saima Kearns","Computation",3.62
+"Saima Kearns","Algorithms",2
+"Lyndsey Ahmed","Databases",1.34
+"Lyndsey Ahmed","Programming language theory",2.58
+"Lyndsey Ahmed","Concurrency",4.37
+"Lyndsey Ahmed","Formal methods",1.21
+"Lyndsey Ahmed","Artificial intelligence",1.69
+"Fabien Sanchez","Computation",2.33
+"Fabien Sanchez","Artificial intelligence",4.28
+"Fabien Sanchez","Systems programming",1.93
+"Safiyah Humphrey","Systems programming",2.59
+"Safiyah Humphrey","Concurrency",3.76
+"Safiyah Humphrey","Artificial intelligence",2.2
+"Safiyah Humphrey","Programming language theory",1.52
+"Wilma Sloan","Formal methods",2.1
+"Wilma Sloan","Databases",1.71
+"Wilma Sloan","Concurrency",4.85
+"Wilma Sloan","Algorithms",1.23
+"Louie Fowler","Computation",1.48
+"Louie Fowler","Formal methods",2.64
+"Louie Fowler","Concurrency",2.5
+"Louie Fowler","Algorithms",2.92
+"Louie Fowler","Systems programming",2.02
+"Louie Fowler","Databases",2.19
+"Zackery Woodcock","Software engineering",4.78
+"Zackery Woodcock","Systems programming",3.86
+"Zackery Woodcock","Databases",4.76
+"Zackery Woodcock","Programming language theory",2.2
+"Zackery Woodcock","Computation",2.26
+"Zackery Woodcock","Algorithms",3.29
+"Iga Reyes","Software engineering",3
+"Iga Reyes","Systems programming",2.87
+"Iga Reyes","Algorithms",4.63
+"Iga Reyes","Databases",4.8
+"Tyler-James Cleveland","Artificial intelligence",1.17
+"Tyler-James Cleveland","Computation",3.61
+"Tyler-James Cleveland","Algorithms",4.02
+"Tyler-James Cleveland","Software engineering",1.12
+"Tyler-James Cleveland","Databases",3.88
+"Joao Hammond","Formal methods",2.22
+"Joao Hammond","Artificial intelligence",1.19
+"Joao Hammond","Concurrency",2.24
+"Joao Hammond","Algorithms",4.26
+"Joao Hammond","Databases",1.3
+"Joao Hammond","Systems programming",4.53
+"Joao Hammond","Computation",3.87
+"Emer Irwin","Systems programming",2.94
+"Emer Irwin","Programming language theory",1.59
+"Emer Irwin","Software engineering",4.06
+"Emer Irwin","Formal methods",3.8
+"Emer Irwin","Concurrency",2.78
+"Emer Irwin","Artificial intelligence",4.91
+"Emer Irwin","Algorithms",1.73
+"Emer Irwin","Databases",2.31
+"Emer Irwin","Computation",4.06
+"Salma Ellis","Formal methods",1.95
+"Salma Ellis","Software engineering",3.72
+"Salma Ellis","Programming language theory",4.23
+"Salma Ellis","Algorithms",2.03
+"Antonia Shannon","Databases",1.86
+"Antonia Shannon","Artificial intelligence",2.02
+"Antonia Shannon","Formal methods",1.95
+"Antonia Shannon","Concurrency",3.63
+"Antonia Shannon","Programming language theory",3.09
+"Jane Bouvet","Concurrency",2.21
+"Jane Bouvet","Artificial intelligence",1.13
+"Jane Bouvet","Computation",2.37
+"Ellice Haas","Concurrency",2.28
+"Ellice Haas","Formal methods",2.29
+"Ellice Haas","Databases",3.04
+"Ellice Haas","Algorithms",2.9
+"Ellice Haas","Software engineering",3.88
+"Ellice Haas","Programming language theory",4.36
+"Ellice Haas","Systems programming",3.77
+"Ellice Haas","Computation",4.44
+"Drew Peck","Programming language theory",1.42
+"Drew Peck","Software engineering",1.45
+"Drew Peck","Artificial intelligence",3.51
+"Drew Peck","Databases",3.65
+"Drew Peck","Algorithms",1.58
+"Drew Peck","Concurrency",3.49
+"Drew Peck","Systems programming",3.08
+"Drew Peck","Formal methods",4.4
+"Drew Peck","Computation",2.86
+"Tymon Sweeney","Systems programming",1.46
+"Tymon Sweeney","Algorithms",2.46
+"Tymon Sweeney","Artificial intelligence",2.8
+"Darrel Thorne","Formal methods",3.82
+"Darrel Thorne","Software engineering",3.7
+"Darrel Thorne","Algorithms",1.39
+"Darrel Thorne","Programming language theory",1.06
+"Kristy Cantrell","Concurrency",2.7
+"Kristy Cantrell","Programming language theory",2.71
+"Kristy Cantrell","Artificial intelligence",4.16
+"Kristy Cantrell","Systems programming",1.46
+"Conor Dickson","Concurrency",4.73
+"Conor Dickson","Software engineering",2.1
+"Conor Dickson","Systems programming",2.47
+"Iolo Howell","Computation",2.01
+"Iolo Howell","Artificial intelligence",3.93
+"Iolo Howell","Systems programming",2.46
+"Iolo Howell","Formal methods",1.93
+"Iolo Howell","Programming language theory",3.55
+"Lloyd Currie","Concurrency",2.24
+"Lloyd Currie","Artificial intelligence",3.62
+"Lloyd Currie","Databases",3.13
+"Shane Mayer","Computation",1.02
+"Shane Mayer","Concurrency",1.48
+"Shane Mayer","Programming language theory",4.25
+"Shane Mayer","Software engineering",2.6
+"Desiree Riley","Concurrency",4.37
+"Desiree Riley","Artificial intelligence",3.12
+"Desiree Riley","Systems programming",2.96
+"Emeli Ponce","Concurrency",4.37
+"Emeli Ponce","Artificial intelligence",2.68
+"Emeli Ponce","Systems programming",1.54
+"Emeli Ponce","Databases",1.8
+"Emeli Ponce","Algorithms",3.54
+"Emeli Ponce","Computation",1.04
+"Irfan Heaton","Algorithms",1.88
+"Irfan Heaton","Computation",2.05
+"Irfan Heaton","Concurrency",3.78
+"Kai Plummer","Programming language theory",2.71
+"Kai Plummer","Concurrency",4.02
+"Kai Plummer","Formal methods",3.54
+"Kai Plummer","Computation",1.98
+"Kai Plummer","Artificial intelligence",4.92
+"Xavier Copeland","Systems programming",2.99
+"Xavier Copeland","Databases",4.68
+"Xavier Copeland","Concurrency",4.14
+"Leigh Zhang","Algorithms",2.85
+"Leigh Zhang","Programming language theory",3.71
+"Leigh Zhang","Formal methods",2.4
+"Leigh Zhang","Computation",4.67
+"Chyna Kemp","Formal methods",1.12
+"Chyna Kemp","Systems programming",3.24
+"Chyna Kemp","Algorithms",1.26
+"Linzi Mcgill","Concurrency",1.48
+"Linzi Mcgill","Software engineering",2.5
+"Linzi Mcgill","Artificial intelligence",2.13
+"Fenton Higgs","Computation",4.22
+"Fenton Higgs","Algorithms",1.42
+"Fenton Higgs","Software engineering",4.24
+"Fenton Higgs","Formal methods",3.28
+"Ted Weber","Software engineering",3.52
+"Ted Weber","Systems programming",3.64
+"Ted Weber","Programming language theory",1.3
+"Teddy Emery","Programming language theory",1.12
+"Teddy Emery","Artificial intelligence",1.27
+"Teddy Emery","Algorithms",4.44
+"Alishba Gaines","Databases",1.96
+"Alishba Gaines","Algorithms",2.95
+"Alishba Gaines","Systems programming",2.68
+"Alishba Gaines","Artificial intelligence",3.75
+"Alishba Gaines","Programming language theory",2.59
+"Alishba Gaines","Concurrency",2.83
+"Alishba Gaines","Computation",4.57
+"Antoinette Dalby","Databases",4.03
+"Antoinette Dalby","Artificial intelligence",2.41
+"Antoinette Dalby","Algorithms",1.11
+"Antoinette Dalby","Computation",3.25
+"Maysa Whyte","Formal methods",3.89
+"Maysa Whyte","Algorithms",2.89
+"Maysa Whyte","Databases",4.86
+"Maysa Whyte","Programming language theory",1.25
+"Eshal Philip","Concurrency",4.35
+"Eshal Philip","Artificial intelligence",4.95
+"Eshal Philip","Systems programming",4.58
+"Eshal Philip","Databases",1.82
+"Eshal Philip","Algorithms",1.85
+"Eshal Philip","Computation",1.1
+"Eshal Philip","Software engineering",1.88
+"Angelika Smart","Systems programming",1.12
+"Angelika Smart","Programming language theory",4.33
+"Angelika Smart","Formal methods",4.04
+"Angelika Smart","Algorithms",3.44
+"Verity Miles","Concurrency",2.78
+"Verity Miles","Formal methods",4.52
+"Verity Miles","Programming language theory",1.64
+"Verity Miles","Databases",1.63
+"Verity Miles","Computation",2.53
+"Verity Miles","Systems programming",2.88
+"Verity Miles","Artificial intelligence",1.68
+"Danyl Connor","Artificial intelligence",1.68
+"Danyl Connor","Programming language theory",4.45
+"Danyl Connor","Concurrency",3.41
+"Hakim Cherry","Formal methods",2.61
+"Hakim Cherry","Concurrency",3.75
+"Hakim Cherry","Algorithms",4.41
+"Hakim Cherry","Computation",3.28
+"Hakim Cherry","Programming language theory",4.16
+"Hakim Cherry","Software engineering",1.94

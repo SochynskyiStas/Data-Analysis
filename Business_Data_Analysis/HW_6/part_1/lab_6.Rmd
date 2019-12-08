@@ -1,0 +1,311 @@
+---
+title: "Untitled"
+author: "Stanislav Sochynskyi, Katsiaryna Lashkevich"
+date: "April 30, 2019"
+output: html_document
+---
+
+Here we are! The last homework... 
+And what a beutiful end!
+
+As always let's first read the files.
+```{r}
+apple_1<- read.csv("Apple1.csv",sep=",")
+
+apple_2<-read.csv("Apple2.csv",sep=",")
+```
+Now, let's check the data.
+```{r}
+#head(apple_1,5)
+#head(apple_2,5)
+```
+
+Wow! Although both datasets have similar structures the data inside is *damn* dirty. Let's clean both files first before moving forward. For this purpose we will use *tm package*. To apply functions from this library the dataset (specifically comments) must be converted to data frame.
+
+```{r}
+library("tm")
+#library("dplyr")
+#library("tidyr")
+apple_1_texts <- iconv(apple_1$text, "utf-8", 'ascii', sub='')
+#apple_1_texts <- iconv(apple_1$text, to = "utf-8")
+apple_1_corpus <- Corpus(VectorSource(apple_1_texts))
+inspect(apple_1_corpus[1:5])
+
+#First, let's remove all URLs, At(@) sign and dollar($) sign using regular expressions.
+
+#remove_URL <- function(x) gsub('https://..*', '', x) #http
+removeURL <- function(x) gsub('https://[[:alnum:]|[:punct:]]*', '', x)
+remove_At_sign <- function(x) gsub("@\\w+ *", "", x) #@
+remove_dollar_sign <- function(x) gsub("\\$\\w+ *", "", x) #$
+
+corpus2 <- Corpus(VectorSource(apple_1_texts))
+apple_1_corpus <- tm_map(corpus2, content_transformer(removeURL))
+apple_1_corpus <- tm_map(apple_1_corpus, content_transformer(remove_At_sign))
+apple_1_corpus <- tm_map(apple_1_corpus, content_transformer(remove_dollar_sign))
+#inspect(apple_1_corpus[1:5])
+
+#Let's now convert corpuses to lower case
+
+apple_1_corpus <- tm_map(apple_1_corpus, tolower)
+#inspect(apple_1_corpus[1:5])
+
+#Removing punctuation
+apple_1_corpus <- tm_map(apple_1_corpus, removePunctuation)
+#inspect(apple_1_corpus[1:5])
+
+#Removing stopwords
+apple_1_corpus <- tm_map(apple_1_corpus, removeNumbers)
+#inspect(apple_1_corpus[1:5])
+
+#Removing numbers
+apple_1_corpus <- tm_map(apple_1_corpus, removeWords, stopwords('english'))
+#inspect(apple_1_corpus[1:5])
+
+#Removing whitespaces
+apple_1_corpus <- tm_map(apple_1_corpus, stripWhitespace)
+inspect(apple_1_corpus[1:5])
+```
+Sweet-sweat work has been done! However, we do not have time for the rest. Now, let's perform the same manipulations with the second "Apple2.csv" dataset.
+```{r}
+apple_2_texts <- iconv(apple_2$text, "utf-8", 'ascii', sub='')
+apple_2_corpus <- Corpus(VectorSource(apple_2_texts))
+#inspect(apple_2_corpus[1:5])
+
+#As with "Apple1.csv" dataset we delete URLs, At(@) sign and dollar($) sign using regular expressions.
+
+corpus2 <- Corpus(VectorSource(apple_2_texts))
+apple_2_corpus <- tm_map(corpus2, content_transformer(removeURL))
+apple_2_corpus <- tm_map(apple_2_corpus, content_transformer(remove_At_sign))
+apple_2_corpus <- tm_map(apple_2_corpus, content_transformer(remove_dollar_sign))
+#inspect(apple_2_corpus[1:5])
+
+#Let's now convert corpuses to lower case
+
+apple_2_corpus <- tm_map(apple_2_corpus, tolower)
+#inspect(apple_2_corpus[1:5])
+
+#Removing punctuation
+apple_2_corpus <- tm_map(apple_2_corpus, removePunctuation)
+#inspect(apple_2_corpus[1:5])
+
+#Removing stopwords
+apple_2_corpus <- tm_map(apple_2_corpus, removeNumbers)
+#inspect(apple_2_corpus[1:5])
+
+#Removing numbers
+apple_2_corpus <- tm_map(apple_2_corpus, removeWords, stopwords('english'))
+#inspect(apple_2_corpus[1:5])
+
+#Removing whitespaces
+apple_2_corpus <- tm_map(apple_2_corpus, stripWhitespace)
+
+inspect(apple_2_corpus[1:5])
+
+```
+
+##1.2. Create word clouds (for each dataset) with  wordsthat  occur  at  least  8 times for each dataset. Which are the top 2 frequent words in both word clouds?
+
+Now it is time to build word cloud for both datasets. The first step is to transform our cleaned corpuses into Document-Term Matrix, after 
+```{r}
+doc_term_matrix_apple_1 <- DocumentTermMatrix(apple_1_corpus)
+inspect(doc_term_matrix_apple_1)
+
+doc_term_matrix_apple_2 <- DocumentTermMatrix(apple_2_corpus)
+inspect(doc_term_matrix_apple_2)
+```
+The results above shows that the first cleaned set of data from "Apple1.csv" file contains 1312 different words in 1000 records.
+The second one, "Apple2.csv" file contains smaller amount of terms - 1197 in the same size records.
+Next step is convert data to regular matrix
+```{r}
+library("tidyr")
+library("dplyr")
+
+doc_term_matrix_apple_1 <- as.data.frame(as.matrix(doc_term_matrix_apple_1))
+
+wordCount <- doc_term_matrix_apple_1 %>%
+  summarise_all(sum)
+
+gathered_wc <- gather(wordCount, "word", "amount", 2:ncol(wordCount))
+```
+
+
+```{r}
+library("wordcloud2")
+
+set.seed(8)
+
+gathered_wc %>%
+  select(word, amount) %>%
+  wordcloud2(size = 0.6, # set scale of the words
+   shape = 'square', # shape of the cloud
+   rotateRatio = 0.2, # angle with which we want to rotate the word
+   minSize = 8) # minimal frequency of the word
+
+```
+
+The most frequent 2 words in the "Apple1.csv" cloud are: *earnings*(385) and *apple*(233). The third top word is *iphone* (140 times). Apple & iPhone, hmm, seems like a begining of a good joke
+
+With the second cloud it is more interesting. The top word is *dow* (915 times). The second place is shared by three words!: *oil*, *wednesday*, *view* - occured 440 times. The third word "whipsaw" (439) is very close:
+```{r}
+doc_term_matrix_apple_2 <- as.data.frame(as.matrix(doc_term_matrix_apple_2))
+
+wordCount <- doc_term_matrix_apple_2 %>%
+  summarise_all(sum)
+
+gathered_wc <- gather(wordCount, "word", "amount", 2:ncol(wordCount))
+
+set.seed(8)
+
+gathered_wc %>%
+  select(word, amount) %>%
+  wordcloud2(size = 0.6, # set scale of the words
+   shape = 'square', # shape of the cloud
+   rotateRatio = 0.2, # angle with which we want to rotate the word
+   minSize = 8) # minimal frequency of the word
+
+```
+##1.3. Build barplot with the total scores of the all sentiments and emotions from both datasets. Which tweets (before or after) are more positive?
+```{r}
+library("syuzhet")
+scores_apple_1 <- get_nrc_sentiment(apple_1_texts)
+scores_apple_2 <- get_nrc_sentiment(apple_2_texts)
+```
+Emotions the "Apple1.cvs" file.
+```{r}
+scores_apple_1 <- scores_apple_1 %>% 
+  mutate(rows = rowSums(select(., 1:9))) %>%
+  summarise(
+    anger = sum(anger),
+    anticipation = sum(anticipation),
+    disgust = sum(disgust),
+    fear = sum(fear),
+    joy = sum(joy),
+    sadness = sum(sadness),
+    surprise = sum(surprise),
+    negative = sum(negative),
+    positive = sum(positive),
+    rows = sum(rows))
+
+scores_gathered <- scores_apple_1 %>% 
+  gather("sentiment", "value", 1:9) %>%
+  mutate(perc = value/rows * 100)
+
+```
+
+```{r}
+library("ggplot2")
+ggplot(scores_gathered, aes(x = sentiment, y = perc, fill = sentiment)) +
+  geom_histogram(stat = "identity") + 
+  theme_bw() + 
+  scale_fill_brewer(palette="RdYlGn")
+```
+
+The same for the "Apple2.cvs" file.
+
+```{r}
+scores_apple_2 <- scores_apple_2 %>% 
+  mutate(rows = rowSums(select(., 1:9))) %>%
+  summarise(
+    anger = sum(anger),
+    anticipation = sum(anticipation),
+    disgust = sum(disgust),
+    fear = sum(fear),
+    joy = sum(joy),
+    sadness = sum(sadness),
+    surprise = sum(surprise),
+    negative = sum(negative),
+    positive = sum(positive),
+    rows = sum(rows))
+
+scores_gathered <- scores_apple_2 %>% 
+  gather("sentiment", "value", 1:9) %>%
+  mutate(perc = value/rows * 100)
+
+```
+
+```{r}
+ggplot(scores_gathered, aes(x = sentiment, y = perc, fill = sentiment)) +
+  geom_histogram(stat = "identity") + 
+  theme_bw() + 
+  scale_fill_brewer(palette="RdYlGn")
+```
+#analysis here
+By comparing to graphs above it is seen that after publishing quarterly profits percantage of *disgust*(~8%) & *negative*(~22.7%) tweets decreased from to 2.5% and 15% respectively. The *joy* (~3.5%) and *positive*(15.3%) jumped to 12.5% and 23% respectively. Fear stayed at the same level. *Sadness* and *surprise* slightly decreased from ~6.25% to ~4.8% while *anticipation*(~19.5%) and *anger* (~6.5%) raised to up to 22% and almost 10% respectively.
+
+*~ - approximately
+
+Seems like quarterly profits really change the taste of apples for better ^_^.
+
+##1.4. Combine datasets (apple1 and apple2). Predict sentiments of the tweets using Random Forest. Build confusion matrix and calculate accuracy, recall and precisionof the model.
+
+```{r}
+merged_apple_dataset <- merge(x = apple_1, y = apple_2, all = TRUE) #merging 2 datasets
+#Let's predict sentiments based on the tweets that we have.
+mad_dist_texts <- iconv(merged_apple_dataset$text, "utf-8", 'ascii', sub='')
+mad_corpus <- Corpus(VectorSource(mad_dist_texts))
+
+#Let's clean our data!
+mad_corpus <- tm_map(mad_corpus, content_transformer(removeURL))
+mad_corpus <- tm_map(mad_corpus, content_transformer(remove_At_sign))
+mad_corpus <- tm_map(mad_corpus, content_transformer(remove_dollar_sign))
+mad_corpus <- tm_map(mad_corpus, tolower)
+mad_corpus <- tm_map(mad_corpus, removePunctuation)
+mad_corpus <- tm_map(mad_corpus, removeNumbers)
+mad_corpus <- tm_map(mad_corpus, removeWords, stopwords('english'))
+mad_corpus <- tm_map(mad_corpus, stripWhitespace)
+
+inspect(mad_corpus[1:5])
+```
+The next step is to create Document-Term matrix from our corpus and transforming it to data frame.
+```{r}
+library("randomForest") # Random Forest
+
+set.seed(999)
+
+dtm <- DocumentTermMatrix(mad_corpus) #creating DocumentTerm matrix from cleaned corpuses
+random_forest_words <- as.data.frame(data.matrix(dtm), stringsAsfactors = FALSE)
+
+amount_for_train <- round(nrow(random_forest_words) / 100 * 80)
+rows <- sample(nrow(random_forest_words), amount_for_train)
+
+names(random_forest_words) <- make.names(names(random_forest_words)) # creates correct names
+random_forest_words$sentim <- merged_apple_dataset$sentiment
+random_forest_words <- subset(random_forest_words, select=which(!duplicated(names(random_forest_words)))) # removes duplicated words
+
+```
+Well now we can go to the prediction part. First we split the data 80%/20%
+```{r}
+train <- random_forest_words[rows,]
+test <- random_forest_words[-rows,]
+
+model_rf <- randomForest(formula = sentim ~ ., data = train)
+pred_rf <- predict(model_rf, test)
+```
+For evaluation of our model we can use confusion matrix:
+```{r }
+report <- data.frame(description = character(), 
+                     accuracy = integer(),
+                     precision = integer(),
+                     recall = integer(),
+                     stringsAsFactors=FALSE)
+
+measures <- function(table, descr, df){
+  acc <- (table[1,1] + table[2,2]) / sum(table)
+  prec <- table[2,2] / (table[2,2] + table[1,2]) 
+  rec <- table[2,2] / (table[2,1] + table[2,2]) 
+    
+  print(paste("Accuracy: ", acc))
+  print(paste("Precision: ", prec))
+  print(paste("Recall: ", rec))
+  
+  tmpDf <- data.frame(descr, acc, prec, rec)
+  colnames(tmpDf) <- colnames(df)
+  df <- rbind(df, tmpDf)
+  return(df)
+}
+```
+```{r}
+cm_rf <- table(pred_rf, test$sentim)
+report <- measures(cm_rf, "Random Forest", report)
+```
+Wow! What a great metrics! Well *accuarcy rate* shows that in ~72% of the time can predict sentiments correctly . The Random Forest model has *perfect precision* (no Type 1 Error) and 90% rate of *recall* metric (type 2 metric occures only with 10% of observations).

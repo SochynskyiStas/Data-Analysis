@@ -1,0 +1,129 @@
+---
+title: "Untitled"
+author: "Stanislav Sochynskyi, Katsiaryna Lashkevich"
+date: "April 30, 2019"
+output: html_document
+---
+
+Here we are! The last homework... 
+And what a beutiful end!
+
+>>Task 2.1  Calculate statistical information
+
+As always let's first read the files and add required libraries for analysis.
+```{r}
+library("igraph")
+library("ggplot2")
+
+edges<- read.csv("Hi-tech-Edges.csv",sep=",")
+nodes<-read.csv("Hi-tech-Nodes.csv",sep=",")
+```
+
+Let's start to build graph rightaway. However, first let's check edges for uniqueness and sum up in case we have duplicates.
+
+```{r}
+#check for uniqueness
+cat("Amount of rows in edges file: ", nrow(edges), "\n")
+cat("Amount of unique edges: ", nrow(unique(edges[,c("from", "to")])), "\n")
+```
+The number of rows in edges is the same as number of unique words in the document thus we can conclude there is no duplicates.
+
+Let's first calculate statistical information about our net such as _density_, _clustering coefficient_, _Reciprocity_, _average path length_, _diameter (by considering weights)_.
+
+```{r}
+net <- graph_from_data_frame(d=edges, vertices=nodes, directed = T)
+#density
+edge_density(net)
+#clutering coefficient
+transitivity(net, type="global") #average of local
+
+transitivity(net, type="local")
+#reciprocity of the network
+reciprocity(net)
+
+#average path length
+mean_distance(net, directed = TRUE, unconnected = TRUE)
+
+#diameter
+diameter(net, directed=T)
+```
+1. Density ratio is only *~0.1*. This means that the network is not tightly connected.
+2. The ratio of the number of loops of length three and the number of paths of length two *~0.35*
+3. As we have directly connected network we can calculate *reciprocity* of the network. The calue is *~0.67* which means that more than a half of nodes have edges in both directions ovar the total number of relations in the network. Basically, it means that many people have connections with each other.
+4. This parameter shows that the distance between all pairs on average is 2.63 
+5. Length of the shortest path between two nodes (diameter) is 102.
+
+Let's now build the graph from the data!
+
+>>Task 2.2  Plot the graph with following rules.
+
+Assigning shapes to the Gender variable:
+```{r}
+shape <- c("square", "circle")
+V(net)$shape=shape[as.numeric(as.factor(V(net)$Gender))]
+V(net)$shape
+```
+Assigning colors to the Department variable:
+```{r}
+#unique(V(net)$Department) - 3 unique department: Marketing, Management, Development
+
+library(RColorBrewer)
+coul = brewer.pal(3, "Set1") 
+V(net)$color=coul[as.numeric(as.factor(V(net)$Department))]
+#V(net)$color
+```
+Assigning size to the edges depending on their weight:
+```{r}
+E(net)$width <- E(net)$weight/8
+```
+Let's find the hub size of the nodes and assign the size:
+```{r}
+hs <- hub_score(net, weights=NA)$vector
+```
+Let's find the diameter and colorize its edges:
+```{r}
+diam <- get_diameter(net, directed=T)
+vcol <- V(net)$color
+vcol[diam] <- "yellow"
+ecol <- rep("gray80", ecount(net))
+ecol[E(net, path=diam)] <- "yellow"
+```
+Now, let's plot the net!
+```{r}
+plot(net, 
+     edge.arrow.size = .2, 
+     vertex.label.dist = 2, 
+     vertex.label.cex = 0.8,
+     vertex.size = hs*40,
+     vertex.label = V(net)$Name,
+     vertex.color= V(net)$color,
+     vertex.label.color = "black",
+     edge.color=ecol,
+     layout= layout.grid(net,width = 6))
+```
+
+>> Task 2.3 
+
+In order to find the number of the communities we use the Walktrap algorithm:
+```{r}
+wtc <- walktrap.community(as.undirected(net))
+wtc
+```
+
+Plotting the communities:
+```{r}
+plot(wtc, net, 
+     edge.arrow.size = .2, 
+     vertex.label.dist = 2, 
+     vertex.label.cex = 0.8,
+     vertex.size = hs*40,
+     vertex.label = V(net)$Name,
+     vertex.color= V(net)$color,
+     vertex.label.color = "black",
+     edge.color=ecol,
+     main = "Hubs",
+     layout= layout.grid(net,width = 6))
+```
+
+It is seen from the output that there are 11 communities. 
+Let's take a look at some samples. For instance, nodes 1 (Abe) and 6 (Fred) have connections only with each other that's why they appeared in one group - Group 2. Group 7 includes nodes 3 (Carl) and 8 (Helen), which also have connections only with each other. Nodes 3 (Carl) and 8 (Helen) do not have connections with nodes 1 (Abe) and 6 (Fred), that means it is right they appear in different groups.

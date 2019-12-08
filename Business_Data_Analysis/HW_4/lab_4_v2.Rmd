@@ -1,0 +1,212 @@
+---
+title: "lab_4"
+author: "Stanislav Sochynskyi, Katsiaryna Lashkevich"
+date: "April 6, 2019"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(anytime)
+library(recommenderlab)
+library(stringr)
+library(rlist)
+```
+
+
+_Reading data_
+```{r}
+books<-read.csv(file.choose()) 
+#books<-read.csv("cs_books.csv",sep=",")
+```
+
+Let's have traditional overview on the data. Let's look at how much unique users and books do we have:
+```{r}
+length(unique(books$user))
+length(unique(books$book))
+#class(books$book)
+```
+
+Our dataset consists of 78 unique users and 9 books. 
+
+Now, let's see the average rating per each book:
+```{r}
+books %>%
+  group_by(book) %>%
+  summarise(avg_rating=mean(rating, na.rm=T)) %>%
+  
+  ggplot(aes((x=book), y=avg_rating)) +
+  geom_bar(stat="identity", fill="#7ba367") +
+  xlab("Book name") +
+  ylab("Average book rating")+
+  coord_flip()+
+  geom_label(aes(label=avg_rating), color="black", size=3) +
+  theme_bw() 
+```
+The maximum rating of 3.45 belongs to the book named "Concurrency".
+The leaste favoured book by the customers is "Artificial Intelligence" has rating of 2.78. 
+(Pretty sure that the rating for this book was made by ITM students ^_^)
+
+Let's also see the average rating per user:
+```{r}
+books %>%
+  group_by(user) %>%
+  summarise(avg_rating=mean(rating, na.rm=T)) %>%
+  
+  ggplot(aes(x=avg_rating)) +
+  geom_histogram(fill="#7ba367", color="white", bins = 30) +
+  theme_bw() +
+  scale_x_continuous("Average rating per user")
+
+```
+
+We can see that in general users give ratings from 2.5 to 3.8. From the graph we can conclude that users from our dataset is quite mean for good ratings.
+
+>> Task 1. 
+
+#Try out 3 different types of recommender systems.  Split the data into 80% (training) and 20% (testing) data in each of the method in the recommendation system you have selected.
+
+_Data preprocessing_
+
+In order to recommend something that user would watch, we want to take into book ratings. For that task we will take advantage of recommenderlab, which requires matrix as an input.
+```{r}
+ratings_spread <- spread(books, key=book, value=rating) # columns - books, rows-users
+
+rating_matrix <- as.matrix(ratings_spread[,-1]) # exclude column with users as we do not need them in our matrix
+
+rating_matrix_lab <- as(rating_matrix, "realRatingMatrix") # in order to create an objet suitable for the package input
+
+#getRatingMatrix(rating_matrix_lab)
+#image(rating_matrix_lab)
+```
+
+```{r}
+set.seed(800)
+eval_scheme <- evaluationScheme(rating_matrix_lab, method="split", train=0.8, given=-2)
+#2 ratings of 20% of users (per user) are excluded for testing 
+
+```
+
+_Recommender systems #1:RANDOM_
+Recommender method "RANDOM" produces random recommendation.
+```{r}
+#recommenderRegistry$get_entry("RANDOM", dataType="realRatingMatrix")
+model_random <- Recommender(getData(eval_scheme, "train"), "RANDOM")
+
+prediction_random <- predict(model_random, getData(eval_scheme, "known"), type="ratings")
+
+```
+
+_Recommender systems #2:POPULAR_
+Recommender method "POPULAR" produces recommendations based on item popularity.
+```{r}
+#recommenderRegistry$get_entry("POPULAR", dataType="realRatingMatrix")
+model_popular <- Recommender(getData(eval_scheme, "train"), "POPULAR")
+
+prediction_popular <- predict(model_popular, getData(eval_scheme, "known"), type="ratings")
+
+```
+
+_Recommender systems #3:IBCF_
+Recommender method "IBCF" produces recommendations based on item-based collaborative filtering.
+```{r}
+#recommenderRegistry$get_entry("IBCF", dataType="realRatingMatrix")
+model_ibcf <- Recommender(getData(eval_scheme, "train"), "IBCF",
+                          param=list(
+                            normalize = "center", 
+                            method="Cosine", 
+                            alpha=0.5))
+
+prediction_ibcf <- predict(model_ibcf, getData(eval_scheme, "known"), type="ratings")
+
+```
+
+>> Task 2. 
+
+#Predict rating for the first 10 users for each of the 3 recommender systems you have selected in the previous task.
+
+```{r}
+recom1 <- predict(model_random, rating_matrix_lab[1:10], type="ratings")
+
+as(recom1, "list")
+```
+
+```{r}
+recom2 <- predict(model_popular, rating_matrix_lab[1:10], type="ratings")
+
+as(recom2, "list")
+```
+
+```{r}
+recom3 <- predict(model_ibcf, rating_matrix_lab[1:10], type="ratings")
+
+as(recom3, "list")
+```
+
+>> Task 3. 
+
+#Use measures (RMSE, MAE) to evaluate the performance of the models. Which model performs better than others and why?
+```{r}
+rbind(calcPredictionAccuracy(prediction_random, getData(eval_scheme, "unknown")),
+      calcPredictionAccuracy(prediction_popular, getData(eval_scheme, "unknown")),
+      calcPredictionAccuracy(prediction_ibcf, getData(eval_scheme, "unknown")))
+```
+
+Based on the evaluation results we recieved we can say that recommender method "POPULAR" performs better than the other two methods we used - "RANDOM" and "IBCF". This method is better for ratings prediction as far as it provides results with smaller root mean squared error (RMSE) and mean squared error (MSE). That means that the smaller the RMSE and MSE, the closer are the predictions to match the line of best fit. 
+
+The mean absolute error (MAE) is a bit higher than in method "IBCF", meaning that with "ICBF" method we can expect quite lower error in absolute value from the forecast on average. 
+
+Let's compare RMSE and MAE to determine whether the forecast contains large but infrequent errors. The larger the difference between RMSE and MAE the more inconsistent the error size. For the method "POPULAR" the difference is 0.16714 and for "ICBF" is 0.270832 => 
+0.16714 < 0.270832 =>
+difference in "POPULAR" < difference in "ICBF" =>
+method "ICBF" is prone to produce larger errors.
+Hence, we can conclude that "POPULAR" method is eventually the best candidate among the observed options.
+
+>> Task 4.
+
+#Add a new user (with username "User1") in your data. Suggest what books should User1 read if his ratings are as given.
+
+First of all let's copy dataset and add User1 to it. To add new rows we will create dataset User1 and then use function rbind() to combine original dataset and User1 dataset.
+
+```{r}
+copy_books <- data.frame(books)
+
+user <- c("User1", "User1", "User1")
+book <- c("Formal methods", "Programming language theory", "Systems programming")
+rating <- c(1, 3, 5)
+
+user1_df <- data.frame(user, book, rating)
+copy_books <- rbind(books, user1_df)
+
+ratings_spread <- spread(copy_books, key=book, value=rating) # columns - books, rows - users
+
+rating_matrix <- as.matrix(ratings_spread[,-1]) # exclude column with users as we do not need them in our matrix
+
+rating_matrix_lab <- as(rating_matrix, "realRatingMatrix")
+```
+
+```{r}
+recom_random_user_1 <- predict(model_random, rating_matrix_lab[79], n=3)
+
+as(recom_random_user_1, "list")
+```
+
+```{r}
+recom_popular_user_1 <- predict(model_popular, rating_matrix_lab[79], n=3)
+
+as(recom_popular_user_1, "list")
+```
+
+```{r}
+recom_ibcf_user_1 <- predict(model_ibcf, rating_matrix_lab[79], n=3)
+
+as(recom_ibcf_user_1, "list")
+```
+
+All 3 methods showed that User1 definitely should buy the book "Databases". What about the other two?
+
+As far as we found out in the previous task that "POPULAR" method is the best and "ICBF" method is close to it, we would base our choice for predictions on the results of these models. 
+
+Thus the User1 will be suggested the following books: "Concurrency", "Computation" and "Databases".
